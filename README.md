@@ -120,6 +120,8 @@ Logs detalhados são gerados pelo LangSmith para análise e otimização do dese
 
    pip install -r requirements.txt
 
+   python src\run_service.py #Isso irá subir tanto o Streamlit como a API em FastAPI
+
 ## 🚀 **Instruções de Docker e Kubernetes**
 
 #### **🐳 Criando a Imagem Docker**
