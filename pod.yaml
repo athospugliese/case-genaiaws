@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: case-app-pod
+  labels:
+    app: case-ai
+spec:
+  containers:
+    - name: streamlit
+      image: athospugliese/case-ai-app:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 8501
+      env:
+        - name: STREAMLIT_SERVER_ENABLE_CORS
+          value: "false"
+        - name: STREAMLIT_SERVER_HEADLESS
+          value: "true"
+        - name: STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION
+          value: "false"
+        - name: PYTHONPATH
+          value: "/app/src"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: OPENAI_API_KEY
+        - name: GROQ_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: GROQ_API_KEY
+        - name: LANGCHAIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: LANGCHAIN_API_KEY
+        - name: LANGSMITH_TRACING
+          value: "true"
+        - name: LANGSMITH_PROJECT
+          value: "pr-dependable-abnormality-65"
+        - name: LANGCHAIN_ENDPOINT
+          value: "https://api.smith.langchain.com"
+        - name: DEFAULT_MODEL
+          value: "gpt-4o-mini"
+      command: ["streamlit", "run", "src/app.py"]
+
+    - name: fastapi
+      image: athospugliese/case-ai-app:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 8000
+      env:
+        - name: PYTHONPATH
+          value: "/app/src"
+        - name: AGENT_URL
+          value: "http://127.0.0.1:8000"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: OPENAI_API_KEY
+        - name: GROQ_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: GROQ_API_KEY
+        - name: LANGCHAIN_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: LANGCHAIN_API_KEY
+
+        - name: LANGSMITH_TRACING
+          value: "true"
+        - name: LANGSMITH_PROJECT
+          value: "pr-dependable-abnormality-65"
+        - name: LANGCHAIN_ENDPOINT
+          value: "https://api.smith.langchain.com"
+        - name: DEFAULT_MODEL
+          value: "gpt-4o-mini"
+      command: ["uvicorn", "src.service.service:app", "--host", "0.0.0.0", "--port", "8000"]

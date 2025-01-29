@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-app-pod-service
+spec:
+  selector:
+    app: case-ai 
+  type: LoadBalancer
+  ports:
+    - name: fastapi
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+    - name: streamlit
+      protocol: TCP
+      port: 8501
+      targetPort: 8501
